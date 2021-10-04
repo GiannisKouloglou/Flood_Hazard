@@ -19,6 +19,8 @@ Th create_waterbodies is the water mask and water depth extraction from the shap
 ***** SOS *****
 
 in order to run this project you need to download and place the SatImAn_Data fold in current working directory (same as main.py)
+https://drive.google.com/file/d/19jdyposguTMMzPK2r2TXTWQQyHjn9cuD/view?usp=sharing
+mail me to gain access
 
 **requirements**
 
