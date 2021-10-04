@@ -68,8 +68,8 @@ if __name__ == "__main__":
 
 
     muggia = cwd + '/' + 'SatImAn_Data' + '/' + "Muggia-City" + "/"
-    trieste = cwd + '/' + 'SatImAn_Data' + '/' + "Trieste" + "/"
-    monf = cwd + '/' + 'SatImAn_Data' + '/' + "Monfalcone" + "/"
+    trieste = cwd + '/' + 'SatImAn_Data' + '/' + "Trieste-City" + "/"
+    monf = cwd + '/' + 'SatImAn_Data' + '/' + "Monfalcone-City" + "/"
 
 
     Muggia_train = [{'date': '20191115', 'place':'Muggia',"path":muggia},
