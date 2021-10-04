@@ -14,7 +14,7 @@ run this python script to train the NN model.
 
 **Create_Flood_Hazard_Maps.py**
 
-Th create_waterbodies is the water mask and water depth extraction from the shapefiles
+To create_waterbodies is the water mask and water depth extraction from the shapefiles
 
 ***** SOS *****
 
