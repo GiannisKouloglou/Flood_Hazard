@@ -19,3 +19,14 @@ Th create_waterbodies is the water mask and water depth extraction from the shap
 ***** SOS *****
 
 in order to run this project you need to download and place the SatImAn_Data fold in current working directory (same as main.py)
+
+**requirements**
+gdal from osgeo
+geopandas (mind the dependances)
+pandas
+numpy
+rasterio
+matplotlib
+sklearn
+tensorflow
+
