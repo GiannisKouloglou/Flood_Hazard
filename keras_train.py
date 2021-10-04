@@ -11,25 +11,13 @@ get_wkd = os.getcwd()
 print(get_wkd)
 
 mug_new = get_wkd + '/../' + 'SatImAn_Data' + '/' + "Muggia-City"
-mug_old = get_wkd + '/../' + 'SatImAn_Data' + '/' + "Muggia_old"
 tri_new = get_wkd + '/../' + 'SatImAn_Data' + '/' + "Trieste-City"
-tri_old = get_wkd + '/../' + 'SatImAn_Data' + '/' + "Trieste_old"
 monf = get_wkd + '/../' + 'SatImAn_Data' + '/' + "Monfalcone-City"
-
-Muggia_old = [{'date': '20181029', 'dt_flag_used': False, 'place': 'Muggia_old', "path": mug_old},
-                    {'date': '20191115', 'dt_flag_used': False, 'place': 'Muggia_old', "path": mug_old},
-                    {'date': '20191223', 'dt_flag_used': False, 'place': 'Muggia_old', "path": mug_old}
-                    ]
-
 
 Muggia_new= [{'date': '20190923', 'dt_flag_used': False, 'place': 'Muggia-City', "path": mug_new},
                     {'date': '20191115', 'dt_flag_used': False, 'place': 'Muggia-City', "path": mug_new},
                     {'date': '20191117', 'dt_flag_used': False, 'place': 'Muggia-City', "path": mug_new}
                     ]
-
-
-Trieste_old = [{'date': '20191117', 'dt_flag_used': False, 'place': 'Trieste_old', "path": tri_old}]
-
 
 Trieste_new = [ {'date': '20190924', 'dt_flag_used': False, 'place': 'Trieste-City', "path": tri_new},
     {'date': '20191115', 'dt_flag_used': False, 'place': 'Trieste-City', "path": tri_new},
@@ -69,16 +57,12 @@ deg_km = 111139
 
 # Get the images path
 img_data_mug_new = Muggia_new[0]['path']
-img_data_mug_old = Muggia_old[0]['path']
 img_data_tri_new = Trieste_new[0]['path']
-img_data_tri_old = Trieste_old[0]['path']
 img_data_monf = Monfalcone[0]['path']
 
 # List the content of directory with the images
 dir_files_list_mug_new = os.listdir(img_data_mug_new)
-dir_files_list_mug_old = os.listdir(img_data_mug_old)
 dir_files_list_tri_new = os.listdir(img_data_tri_new)
-dir_files_list_tri_old = os.listdir(img_data_tri_old)
 dir_files_list_monf = os.listdir(img_data_monf)
 
 # Create an array with tif images
@@ -88,20 +72,12 @@ for d in range(len(dir_files_list_mug_new)):
     if len(dir_files_list_mug_new[d].split(".tif")) == 2 and dir_files_list_mug_new[d].split(".tif")[1] == '':
         tif_names_mug_new.append( dir_files_list_mug_new[d])
 
-tif_names_mug_old = []
-for d in range(len(dir_files_list_mug_old)):
-    if len(dir_files_list_mug_old[d].split(".tif")) == 2 and dir_files_list_mug_old[d].split(".tif")[1] == '':
-        tif_names_mug_old.append(dir_files_list_mug_old[d])
 
 tif_names_tri_new = []
 for d in range(len(dir_files_list_tri_new)):
     if len(dir_files_list_tri_new[d].split(".tif")) == 2 and dir_files_list_tri_new[d].split(".tif")[1] == '':
         tif_names_tri_new.append( dir_files_list_tri_new[d])
 
-tif_names_tri_old = []
-for d in range(len(dir_files_list_tri_old)):
-    if len(dir_files_list_tri_old[d].split(".tif")) == 2 and dir_files_list_tri_old[d].split(".tif")[1] == '':
-        tif_names_tri_old.append(dir_files_list_tri_old[d])
 
 tif_names_monf = []
 for d in range(len(dir_files_list_monf)):
@@ -175,71 +151,6 @@ for int_dates in range(len(Muggia_new)):
     print(" MUGGIA NEW DF append the df_img_cleaned:", sampling_df.shape, "\n")
     del sampling_df
 
-# MUGGIA OLD #
-print("MUGGIA OLD EXTRACTION DATA")
-DF_muggia_old = pd.DataFrame()
-for int_dates in range(len(Muggia_old)):
-    df_img = pd.DataFrame()
-    df_img = extract_features(tif_names_mug_old, Muggia_old, int_dates, img_data_mug_old, df_img, deg_km,"train")
-    print("ALL DATAFRAME: ", df_img.shape)
-    print("End of extract")
-
-    # idx_dem = df_img[df_img['DEM'] == float('-inf')].index.tolist()
-    # idx_slope = df_img[df_img['Slope'] == float('-inf')].index.tolist()
-    idx_water_depth = df_img[df_img['Water_Depth'] == float(0)].index.tolist()
-    # idx_water_rough = df_img[df_img['Roughness'] <= float(-32770.0)].index.tolist()
-    idx_asp = df_img[df_img['Aspect'] == float(-10000.0)].index.tolist()
-    # idx_tpi = df_img[df_img['TPI'] == float(-10000.0)].index.tolist()
-    # idx_tri = df_img[df_img['TRI'] == float(-10000.0)].index.tolist()
-    # print("end idx")
-    idx_union = sorted(list(set().union(idx_asp, idx_water_depth)))
-    # print("end union")
-
-    df_img_cleaned = pd.DataFrame(df_img.drop(index=idx_union, axis=0, inplace=False)).reset_index(drop=True)
-    del df_img
-    print("End of cleaning the dataframe", df_img_cleaned.shape)
-    # # Calculate the Water Velocity per pixel based on Water_Depth, Slope, Resolution and Roughness
-    print("FIND RESOLUTION")
-    if int_dates == 0:
-        for i in range(len(tif_names_mug_old)):
-            if "DEM" in tif_names_mug_old[i]:
-                im = gdal.Open(img_data_mug_old + "/" + tif_names_mug_old[i])
-                ulx, pixelwidthx, xskew, uly, yskew, pixelheighty = im.GetGeoTransform()
-                Pixel_Width = abs(pixelwidthx * deg_km)
-                Pixel_Height = abs(pixelheighty * deg_km)
-                Pixel_Resolution = (Pixel_Width + Pixel_Height) / 2.0
-                del im, ulx, pixelwidthx, xskew, uly, yskew, pixelheighty
-
-    print("FIND Velocity")
-    wv_values_mug_old = calc_water_velocity(df_img_cleaned, Pixel_Resolution)
-    df_img_cleaned['Water_Velocity'] = wv_values_mug_old
-    del wv_values_mug_old
-
-    # Calculate the Flood Hazard and hazard cardinality
-    print("Calculate Hazard cardinality")
-    sampling_df = cardinality(df_img_cleaned)
-    del df_img_cleaned
-    print("Calculate Hazard")
-    sampling_df = calc_flood_hazard(sampling_df,"train")
-
-    print("\n---------------->>>>>>>>>>>>>>>>>>>>>>>> ")
-    print(" sampling_df shape = ", sampling_df.shape)
-    print(" Class distribution in sampling_df: ")
-    print(" No hazard = ", sampling_df.loc[sampling_df['Hazard_Category'] == 'No Hazard'].shape)
-    print(" Low hazard = ", sampling_df.loc[sampling_df['Hazard_Category'] == 'Low Hazard'].shape)
-    print(" Medium hazard = ", sampling_df.loc[sampling_df['Hazard_Category'] == "Medium Hazard"].shape)
-    print(" High hazard = ", sampling_df.loc[sampling_df['Hazard_Category'] == "High Hazard"].shape)
-    print("<<<<<<<<<<<<<<<<<<<<<<<<------------------------------\n ")
-    # DROP NAN
-    nan = sampling_df.isnull().values.any()
-    print("NAN? ",nan)
-    if nan:
-        print("DROP NAN")
-        sampling_df = sampling_df.dropna().reset_index(drop=True)
-
-    DF_muggia_old = pd.concat([DF_muggia_old, sampling_df], axis=0, ignore_index=False)
-    print(" MUGGIA OLD DF append the df_img_cleaned:", DF_muggia_old.shape, "\n")
-    del sampling_df
 
 # Trieste NEW #
 print("TRIESTE NEW EXTRACTION DATA")
@@ -305,70 +216,6 @@ for int_dates in range(len(Trieste_new)):
     print(" Trieste NEW DF append the df_img_cleaned:", DF_trieste_new.shape, "\n")
     del sampling_df
 
-# Trieste OLD #
-print("TRIESTE OLD EXTRACTION DATA")
-DF_trieste_old = pd.DataFrame()
-for int_dates in range(len(Trieste_old)):
-    df_img = pd.DataFrame()
-    df_img = extract_features(tif_names_tri_old, Trieste_old, int_dates, img_data_tri_old, df_img, deg_km,"train")
-    print("ALL DATAFRAME: ", df_img.shape)
-    print("End of extract")
-
-    # idx_dem = df_img[df_img['DEM'] == float('-inf')].index.tolist()
-    # idx_slope = df_img[df_img['Slope'] == float('-inf')].index.tolist()
-    idx_water_depth = df_img[df_img['Water_Depth'] == float(0)].index.tolist()
-    # idx_water_rough = df_img[df_img['Roughness'] <= float(-32770.0)].index.tolist()
-    idx_asp = df_img[df_img['Aspect'] == float(-10000.0)].index.tolist()
-    # idx_tpi = df_img[df_img['TPI'] == float(-10000.0)].index.tolist()
-    # idx_tri = df_img[df_img['TRI'] == float(-10000.0)].index.tolist()
-    # print("end idx")
-    idx_union = sorted(list(set().union(idx_asp, idx_water_depth)))
-    # print("end union")
-
-    df_img_cleaned = pd.DataFrame(df_img.drop(index=idx_union, axis=0, inplace=False)).reset_index(drop=True)
-    del df_img
-    print("End of cleaning the dataframe", df_img_cleaned.shape)
-    # # Calculate the Water Velocity per pixel based on Water_Depth, Slope, Resolution and Roughness
-    print("FIND RESOLUTION")
-    if int_dates == 0:
-        for i in range(len(tif_names_tri_old)):
-            if "DEM" in tif_names_tri_old[i]:
-                im = gdal.Open(img_data_tri_old + "/" + tif_names_tri_old[i])
-                ulx, pixelwidthx, xskew, uly, yskew, pixelheighty = im.GetGeoTransform()
-                Pixel_Width = abs(pixelwidthx * deg_km)
-                Pixel_Height = abs(pixelheighty * deg_km)
-                Pixel_Resolution = (Pixel_Width + Pixel_Height) / 2.0
-                del im, ulx, pixelwidthx, xskew, uly, yskew, pixelheighty
-
-    print("FIND Velocity")
-    wv_values_tri_old = calc_water_velocity(df_img_cleaned, Pixel_Resolution)
-    df_img_cleaned['Water_Velocity'] = wv_values_tri_old
-    del wv_values_tri_old
-    # Calculate the Flood Hazard and hazard cardinality
-    print("Calculate Hazard cardinality")
-    sampling_df = cardinality(df_img_cleaned)
-    del df_img_cleaned
-    print("Calculate Hazard")
-    sampling_df = calc_flood_hazard(sampling_df, "train")
-
-    print("\n---------------->>>>>>>>>>>>>>>>>>>>>>>> ")
-    print(" sampling_df shape = ", sampling_df.shape)
-    print(" Class distribution in sampling_df: ")
-    print(" No hazard = ", sampling_df.loc[sampling_df['Hazard_Category'] == 'No Hazard'].shape)
-    print(" Low hazard = ", sampling_df.loc[sampling_df['Hazard_Category'] == 'Low Hazard'].shape)
-    print(" Medium hazard = ", sampling_df.loc[sampling_df['Hazard_Category'] == "Medium Hazard"].shape)
-    print(" High hazard = ", sampling_df.loc[sampling_df['Hazard_Category'] == "High Hazard"].shape)
-    print("<<<<<<<<<<<<<<<<<<<<<<<<------------------------------\n ")
-    # DROP NAN
-    nan = sampling_df.isnull().values.any()
-    print("NAN? ", nan)
-    if nan:
-        print("DROP NAN")
-        sampling_df = sampling_df.dropna().reset_index(drop=True)
-
-    DF_trieste_old = pd.concat([DF_trieste_old, sampling_df], axis=0, ignore_index=False)
-    print(" Trieste OLD DF append the df_img_cleaned:", DF_trieste_old.shape, "\n")
-    del sampling_df
 
 # Monfalcone #
 print("MONFALCONE NEW EXTRACTION DATA")
@@ -439,7 +286,7 @@ for int_dates in range(len(Monfalcone)):
 
 # #Concat all Dataframes
 # print("CONCARNATION OF DATAFRAMES")
-frames = [DF_muggia_new,DF_muggia_old,DF_trieste_new,DF_trieste_old,DF_monfalcone]
+frames = [DF_muggia_new,DF_trieste_new,DF_monfalcone]
 result = pd.concat(frames)
 print("FINAL result DATAFRAME",result.shape)
 
